@@ -1,10 +1,8 @@
 package com.example.backend.controller;
 
 import com.example.backend.model.Facturation;
-import com.example.backend.repository.FacturationRepository;
 import com.example.backend.service.FacturationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +22,6 @@ public class FacturationController {
     @GetMapping("/{id}")
     public Facturation getFacturationById(@PathVariable Long id) {
         return facturationService.getFacturationById(id);
-
     }
 
     @PostMapping
@@ -42,5 +39,6 @@ public class FacturationController {
          facturationService.deleteFacturationById(id);
     }
 
+    }
 
-}
+

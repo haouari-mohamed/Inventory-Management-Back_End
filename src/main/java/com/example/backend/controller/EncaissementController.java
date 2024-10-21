@@ -43,4 +43,5 @@ public class EncaissementController {
         encaissementService.deleteEncaissement(id);
     }
 
+
 }
