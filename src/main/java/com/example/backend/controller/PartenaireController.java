@@ -26,8 +26,11 @@ public class PartenaireController {
         return partenaireService.getPartenaireById(id);
     }
 
+
+
     @PostMapping
     public Partenaire createPartenaire(@RequestBody Partenaire partenaire) {
+
         return partenaireService.createPartenaire(partenaire);
     }
 
@@ -40,4 +43,5 @@ public class PartenaireController {
     public void deletePartenaire(@PathVariable Long id) {
         partenaireService.deletePartenaire(id);
     }
+
 }

@@ -26,6 +26,7 @@ public class ClientController {
         return clientService.getClientById(id);
     }
 
+
     @PostMapping
     public Client createClient(@RequestBody Client client) {
         return clientService.createClient(client);
@@ -37,10 +38,10 @@ public class ClientController {
         return clientService.updateClient(id,client);
     }
 
-
     @DeleteMapping("/{id}")
     public void deleteClient(@PathVariable Long id) {
         clientService.deleteClient(id);
     }
+
 }
 

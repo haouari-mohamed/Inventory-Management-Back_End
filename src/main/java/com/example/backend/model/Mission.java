@@ -39,7 +39,7 @@ public class Mission {
     private Double partMissionCID;
 
     @Column(name = "compte_client", nullable = false)
-    private Double compteClient = 0.0; // Set a default value
+    private Double compteClient = 0.0;
 
     @Column(name = "date_debut", nullable = false)
     @Temporal(TemporalType.DATE)

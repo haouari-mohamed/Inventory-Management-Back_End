@@ -1,7 +1,7 @@
 package com.example.backend.controller;
 
 import com.example.backend.model.Unite;
-import com.example.backend.repository.UniteRepository;
+import com.example.backend.service.UniteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,42 +13,43 @@ import java.util.List;
 public class UniteController {
 
     @Autowired
-    private UniteRepository uniteRepository;
+    private UniteService uniteService;
 
     @GetMapping
     public List<Unite> getAllUnites() {
-        return uniteRepository.findAll();
+        return uniteService.getAllUnites();
+
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Unite> getUniteById(@PathVariable Long id) {
-        return uniteRepository.findById(id)
-                .map(unite -> ResponseEntity.ok().body(unite))
+        return uniteService.getUniteById(id)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public Unite createUnite(@RequestBody Unite unite) {
-        return uniteRepository.save(unite);
+    public ResponseEntity<Unite> createUnite(@RequestBody Unite unite) {
+        Unite createdUnite = uniteService.createUnite(unite);
+        return ResponseEntity.ok(createdUnite);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Unite> updateUnite(@PathVariable Long id, @RequestBody Unite unite) {
-        return uniteRepository.findById(id)
-                .map(existingUnite -> {
-                    existingUnite.setNom_unite(unite.getNom_unite());
-                    return ResponseEntity.ok().body(uniteRepository.save(existingUnite));
-                })
+    public ResponseEntity<Unite> updateUnite(@PathVariable Long id, @RequestBody Unite uniteDetails) {
+        return uniteService.updateUnite(id, uniteDetails)
+                .map(updatedUnite -> ResponseEntity.ok().body(updatedUnite))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteUnite(@PathVariable Long id) {
-        return uniteRepository.findById(id)
-                .map(unite -> {
-                    uniteRepository.delete(unite);
-                    return ResponseEntity.noContent().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+
+    public ResponseEntity<?> deleteUnite(@PathVariable Long id) {
+        boolean isDeleted = uniteService.deleteUnite(id);
+        if (isDeleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+
     }
 }

@@ -27,8 +27,3 @@ public class MissionDivision {
     private Double partMission;
 
 }
-
-
-
-
-

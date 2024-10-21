@@ -1,7 +1,7 @@
 package com.example.backend.controller;
 
 import com.example.backend.model.Pays;
-import com.example.backend.repository.PaysRepository;
+import com.example.backend.service.PaysService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,42 +13,40 @@ import java.util.List;
 public class PaysController {
 
     @Autowired
-    private PaysRepository paysRepository;
+    private PaysService paysService;
+
 
     @GetMapping
     public List<Pays> getAllPays() {
-        return paysRepository.findAll();
+        return paysService.getAllPays();
     }
-
     @GetMapping("/{id}")
     public ResponseEntity<Pays> getPaysById(@PathVariable Long id) {
-        return paysRepository.findById(id)
+        return paysService.getPaysById(id)
                 .map(pays -> ResponseEntity.ok().body(pays))
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public Pays createPays(@RequestBody Pays pays) {
-        return paysRepository.save(pays);
-    }
+
+
+
+   @PostMapping
+   public Pays CreatePays(@RequestBody Pays pays) {
+        return paysService.CreatePays(pays);
+   }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<Pays> updatePays(@PathVariable Long id, @RequestBody Pays pays) {
-        return paysRepository.findById(id)
-                .map(existingPays -> {
-                    existingPays.setLibelle_pays(pays.getLibelle_pays());
-                    return ResponseEntity.ok().body(paysRepository.save(existingPays));
-                })
+        return paysService.updatePays(id, pays)
+                .map(updatedPays -> ResponseEntity.ok().body(updatedPays))
                 .orElse(ResponseEntity.notFound().build());
     }
 
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deletePays(@PathVariable Long id) {
-        return paysRepository.findById(id)
-                .map(pays -> {
-                    paysRepository.delete(pays);
-                    return ResponseEntity.noContent().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        boolean deleted = paysService.deletePays(id);
+        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }

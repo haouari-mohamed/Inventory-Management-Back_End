@@ -16,10 +16,8 @@ public class AffaireController {
 
     @Autowired
     private AffaireService affaireService;
-
     @Autowired
     private AffaireRepository affaireRepository;
-
     @Autowired
     private UtilisateurRepository utilisateurRepository;
 
@@ -77,6 +75,7 @@ public class AffaireController {
     public List<StatusAffaire> getAllStatuses() {
         return Arrays.asList(StatusAffaire.values());
     }
+
 
     @GetMapping("/last-id")
     public ResponseEntity<String> getLastAffaireId() {
@@ -287,6 +286,5 @@ public class AffaireController {
 //                })
 //                .orElse(ResponseEntity.notFound().build());
 //    }
-
 
 }

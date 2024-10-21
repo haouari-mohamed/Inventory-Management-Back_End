@@ -24,10 +24,13 @@ public class SecurityConfig {
             // Authorize requests
             .authorizeHttpRequests(authz -> authz
                 // Permit all HTTP methods to /api/** endpoints
-                .requestMatchers("/api/**").permitAll()
+
+
+//                .requestMatchers("/api/**").permitAll()
                 
                 // Any other request must be authenticated
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
+
             )
             
             // HTTP Basic Authentication

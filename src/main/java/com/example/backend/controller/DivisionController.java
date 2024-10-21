@@ -40,4 +40,5 @@ public class DivisionController {
     public void deleteDivision(@PathVariable Long id) {
         divisionService.deletedivision(id);
     }
+
 }

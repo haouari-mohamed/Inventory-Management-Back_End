@@ -26,8 +26,10 @@ public class EncaissementController {
         return encaissementService.getEncaissementById(id);
     }
 
+
     @PostMapping
     public Encaissement createEncaissement(@RequestBody Encaissement encaissement) {
+
         return encaissementService.createEncaissement(encaissement);
     }
 
@@ -40,4 +42,5 @@ public class EncaissementController {
     public void deleteEncaissement(@PathVariable Long id) {
         encaissementService.deleteEncaissement(id);
     }
+
 }

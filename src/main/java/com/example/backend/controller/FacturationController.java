@@ -12,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/facturations")
 public class FacturationController {
+
     @Autowired
     private FacturationService facturationService;
 
@@ -23,6 +24,7 @@ public class FacturationController {
     @GetMapping("/{id}")
     public Facturation getFacturationById(@PathVariable Long id) {
         return facturationService.getFacturationById(id);
+
     }
 
     @PostMapping
@@ -39,4 +41,6 @@ public class FacturationController {
     public void deleteFacturation(@PathVariable Long id) {
          facturationService.deleteFacturationById(id);
     }
+
+
 }
