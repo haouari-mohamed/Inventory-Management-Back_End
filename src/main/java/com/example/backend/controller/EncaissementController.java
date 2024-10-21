@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/encaissements")
 public class EncaissementController {
-    
+
     @Autowired
     private EncaissementService encaissementService;
 
