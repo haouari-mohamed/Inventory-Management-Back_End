@@ -1,7 +1,6 @@
 package com.example.backend.controller;
 
 import com.example.backend.model.Pays;
-import com.example.backend.repository.PaysRepository;
 import com.example.backend.service.PaysService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +26,7 @@ public class PaysController {
                 .map(pays -> ResponseEntity.ok().body(pays))
                 .orElse(ResponseEntity.notFound().build());
     }
+
 
 
 

@@ -2,6 +2,7 @@ package com.example.backend.controller;
 
 import com.example.backend.model.Division;
 import com.example.backend.repository.DivisionRepository;
+import com.example.backend.service.DivisionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,43 +14,33 @@ import java.util.List;
 public class DivisionController {
 
     @Autowired
-    private DivisionRepository divisionRepository;
+    private DivisionService divisionService;
 
     @GetMapping
     public List<Division> getAllDivisions() {
-        return divisionRepository.findAll();
+        return divisionService.getAllDivision();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Division> getDivisionById(@PathVariable Long id) {
-        return divisionRepository.findById(id)
-                .map(division -> ResponseEntity.ok().body(division))
-                .orElse(ResponseEntity.notFound().build());
+    public Division getDivisionById(@PathVariable Long id) {
+        return divisionService.getDivisionById(id);
     }
 
     @PostMapping
     public Division createDivision(@RequestBody Division division) {
-        return divisionRepository.save(division);
+        return divisionService.createDivision(division);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Division> updateDivision(@PathVariable Long id, @RequestBody Division division) {
-        return divisionRepository.findById(id)
-                .map(existingDivision -> {
-                    existingDivision.setNom_division(division.getNom_division());
-                    existingDivision.setPole(division.getPole());
-                    return ResponseEntity.ok().body(divisionRepository.save(existingDivision));
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public Division updateDivision(@PathVariable Long id, @RequestBody Division division) {
+        return divisionService.updateDivision(id,division);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteDivision(@PathVariable Long id) {
-        return divisionRepository.findById(id)
-                .map(division -> {
-                    divisionRepository.delete(division);
-                    return ResponseEntity.noContent().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public void deleteDivision(@PathVariable Long id) {
+        divisionService.deletedivision(id);
     }
-}
+
+    }
+
+

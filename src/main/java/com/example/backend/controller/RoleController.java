@@ -18,10 +18,12 @@ public class RoleController {
     @GetMapping
     public List<Role> getAllRoles() {
         return roleService.getAllRoles();
+
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Role> getRoleById(@PathVariable Long id) {
+
         return roleService.getRoleById(id)
                 .map(role -> ResponseEntity.ok().body(role))
                 .orElse(ResponseEntity.notFound().build());
@@ -29,11 +31,13 @@ public class RoleController {
 
     @PostMapping
     public Role createRole(@RequestBody Role role) {
+
         return roleService.createRole(role);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Role> updateRole(@PathVariable Long id, @RequestBody Role role) {
+
         return roleService.updateRole(id, role)
                 .map(updatedRole -> ResponseEntity.ok(updatedRole))
                 .orElse(ResponseEntity.notFound().build());
@@ -45,3 +49,4 @@ public class RoleController {
         return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }
+

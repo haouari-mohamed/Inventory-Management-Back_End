@@ -2,6 +2,7 @@ package com.example.backend.controller;
 
 import com.example.backend.model.*;
 import com.example.backend.repository.*;
+import com.example.backend.service.AffaireService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,80 +15,60 @@ import java.util.*;
 public class AffaireController {
 
     @Autowired
+    private AffaireService affaireService;
+    @Autowired
     private AffaireRepository affaireRepository;
-
-    @Autowired
-    private ClientRepository clientRepository;
-
-    @Autowired
-    private PoleRepository poleRepository;
-
-    @Autowired
-    private DivisionRepository divisionRepository;
-
     @Autowired
     private UtilisateurRepository utilisateurRepository;
 
     @GetMapping
     public List<Affaire> getAllAffaires() {
-        return affaireRepository.findAll();
+        return affaireService.getAllAffaire();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Affaire> getAffaireById(@PathVariable Long id) {
-        return affaireRepository.findById(id)
-                .map(affaire -> ResponseEntity.ok().body(affaire))
-                .orElse(ResponseEntity.notFound().build());
+    public Affaire getAffaireById(@PathVariable Long id) {
+        return affaireService.getById(id);
     }
 
     @PostMapping
-    public ResponseEntity<?> createAffaire(@RequestBody Affaire affaire) {
-        if (affaire.getIdAffaire() == null) {
-            return ResponseEntity.badRequest().body("ID Affaire must be provided");
+    public Affaire createAffaire(@RequestBody Affaire affaire) {
+        return affaireService.createAffaire(affaire);
+    }
+    @DeleteMapping("/{id}")
+    public void deleteAffaire(@PathVariable Long id) {
+        affaireService.deleteAffaire(id);
+    }
+
+    @PutMapping("/{id}/chef-projet")
+    public ResponseEntity<Object> assignChefProjet(@PathVariable Long id, @RequestBody Map<String, Long> request) {
+        Long chefProjetId = request.get("chefProjetId");
+        Optional<Affaire> affaireOpt = affaireRepository.findById(id);
+
+        if (!affaireOpt.isPresent()) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Affaire not found");
+            return ResponseEntity.notFound().build();
         }
-        if (affaireRepository.existsById(affaire.getIdAffaire())) {
-            return ResponseEntity.badRequest().body("An affaire with this ID already exists");
+
+        Affaire affaire = affaireOpt.get();
+        Optional<Utilisateur> chefProjetOpt = utilisateurRepository.findById(chefProjetId);
+
+        if (!chefProjetOpt.isPresent()) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Chef de Projet not found");
+            return ResponseEntity.badRequest().body(errorResponse);
         }
-        affaire.setStatusAffaire(StatusAffaire.EN_CREATION); // Set initial status
-        Affaire savedAffaire = affaireRepository.save(affaire);
-        return ResponseEntity.ok(savedAffaire);
+
+        Utilisateur chefProjet = chefProjetOpt.get();
+        affaire.setChefProjet(chefProjet);
+        Affaire updatedAffaire = affaireRepository.save(affaire);
+        return ResponseEntity.ok().body(updatedAffaire);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Affaire> updateAffaire(@PathVariable Long id, @RequestBody Affaire affaire) {
-        return affaireRepository.findById(id)
-                .map(existingAffaire -> {
-                    existingAffaire.setLibelle_affaire(affaire.getLibelle_affaire());
-                    existingAffaire.setPrixGlobal(affaire.getPrixGlobal());
-                    existingAffaire.setStatusAffaire(affaire.getStatusAffaire());
-                    existingAffaire.setMarche(affaire.getMarche());
-                    existingAffaire.setDateDebut(affaire.getDateDebut());
-                    existingAffaire.setDateFin(affaire.getDateFin());
-                    existingAffaire.setDateArret(affaire.getDateArret());
-                    existingAffaire.setDateRecommencement(affaire.getDateRecommencement());
-                    
-                    // Update client
-                    if (affaire.getClient() != null && affaire.getClient().getId_client() != null) {
-                        clientRepository.findById(affaire.getClient().getId_client())
-                                .ifPresent(existingAffaire::setClient);
-                    }
-                    
-                    // Update pole
-                    if (affaire.getPolePrincipale() != null && affaire.getPolePrincipale().getId_pole() != null) {
-                        poleRepository.findById(affaire.getPolePrincipale().getId_pole())
-                                .ifPresent(existingAffaire::setPolePrincipale);
-                    }
-                    
-                    // Update division
-                    if (affaire.getDivisionPrincipale() != null && affaire.getDivisionPrincipale().getId_division() != null) {
-                        divisionRepository.findById(affaire.getDivisionPrincipale().getId_division())
-                                .ifPresent(existingAffaire::setDivisionPrincipale);
-                    }
-                    
-                    existingAffaire.setPartCID(affaire.getPartCID());
-                    return ResponseEntity.ok(affaireRepository.save(existingAffaire));
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public Affaire updateAffaire(@PathVariable Long id, @RequestBody Affaire affaire) {
+        return affaireService.updateAffaire(id,affaire);
     }
 
     @GetMapping("/statuses")
@@ -95,15 +76,7 @@ public class AffaireController {
         return Arrays.asList(StatusAffaire.values());
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteAffaire(@PathVariable Long id) {
-        return affaireRepository.findById(id)
-                .map(affaire -> {
-                    affaireRepository.delete(affaire);
-                    return ResponseEntity.noContent().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
+
     @GetMapping("/last-id")
     public ResponseEntity<String> getLastAffaireId() {
         return affaireRepository.findTopByOrderByIdAffaireDesc()
@@ -119,20 +92,12 @@ public class AffaireController {
                     return ResponseEntity.ok(String.valueOf(nextId));
                 })
                 .orElse(ResponseEntity.ok(String.valueOf(java.time.Year.now().getValue() * 100000 + 1)));
+
     }
 
     @GetMapping("/stats")
-    public ResponseEntity<Map<String, Long>> getAffaireStats() {
-        long total = affaireRepository.count();
-        long enCours = affaireRepository.countByStatusAffaire(StatusAffaire.EN_PRODUCTION);
-        long terminees = affaireRepository.countByStatusAffaire(StatusAffaire.TERMINE);
-
-        Map<String, Long> stats = new HashMap<>();
-        stats.put("total", total);
-        stats.put("enCours", enCours);
-        stats.put("terminees", terminees);
-
-        return ResponseEntity.ok(stats);
+    public Map<String, Long> getAffaireStats() {
+        return affaireService.getAffaireByStatus();
     }
 
     @GetMapping("/monthly-stats")
@@ -285,29 +250,41 @@ public class AffaireController {
             .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{id}/chef-projet")
-    public ResponseEntity<Object> assignChefProjet(@PathVariable Long id, @RequestBody Map<String, Long> request) {
-        Long chefProjetId = request.get("chefProjetId");
-        Optional<Affaire> affaireOpt = affaireRepository.findById(id);
-        
-        if (!affaireOpt.isPresent()) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Affaire not found");
-            return ResponseEntity.notFound().build();
-        }
-        
-        Affaire affaire = affaireOpt.get();
-        Optional<Utilisateur> chefProjetOpt = utilisateurRepository.findById(chefProjetId);
-        
-        if (!chefProjetOpt.isPresent()) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Chef de Projet not found");
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
-        
-        Utilisateur chefProjet = chefProjetOpt.get();
-        affaire.setChefProjet(chefProjet);
-        Affaire updatedAffaire = affaireRepository.save(affaire);
-        return ResponseEntity.ok().body(updatedAffaire);
-    }
+//    @PutMapping("/{id}")
+//    public ResponseEntity<Affaire> updateAffaire(@PathVariable Long id, @RequestBody Affaire affaire) {
+//        return affaireRepository.findById(id)
+//                .map(existingAffaire -> {
+//                    existingAffaire.setLibelle_affaire(affaire.getLibelle_affaire());
+//                    existingAffaire.setPrixGlobal(affaire.getPrixGlobal());
+//                    existingAffaire.setStatusAffaire(affaire.getStatusAffaire());
+//                    existingAffaire.setMarche(affaire.getMarche());
+//                    existingAffaire.setDateDebut(affaire.getDateDebut());
+//                    existingAffaire.setDateFin(affaire.getDateFin());
+//                    existingAffaire.setDateArret(affaire.getDateArret());
+//                    existingAffaire.setDateRecommencement(affaire.getDateRecommencement());
+//
+//                    // Update client
+//                    if (affaire.getClient() != null && affaire.getClient().getId_client() != null) {
+//                        clientRepository.findById(affaire.getClient().getId_client())
+//                                .ifPresent(existingAffaire::setClient);
+//                    }
+//
+//                    // Update pole
+//                    if (affaire.getPolePrincipale() != null && affaire.getPolePrincipale().getId_pole() != null) {
+//                        poleRepository.findById(affaire.getPolePrincipale().getId_pole())
+//                                .ifPresent(existingAffaire::setPolePrincipale);
+//                    }
+//
+//                    // Update division
+//                    if (affaire.getDivisionPrincipale() != null && affaire.getDivisionPrincipale().getId_division() != null) {
+//                        divisionRepository.findById(affaire.getDivisionPrincipale().getId_division())
+//                                .ifPresent(existingAffaire::setDivisionPrincipale);
+//                    }
+//
+//                    existingAffaire.setPartCID(affaire.getPartCID());
+//                    return ResponseEntity.ok(affaireRepository.save(existingAffaire));
+//                })
+//                .orElse(ResponseEntity.notFound().build());
+//    }
+
 }

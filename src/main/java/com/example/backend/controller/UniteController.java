@@ -18,6 +18,7 @@ public class UniteController {
     @GetMapping
     public List<Unite> getAllUnites() {
         return uniteService.getAllUnites();
+
     }
 
     @GetMapping("/{id}")
@@ -41,6 +42,7 @@ public class UniteController {
     }
 
     @DeleteMapping("/{id}")
+
     public ResponseEntity<?> deleteUnite(@PathVariable Long id) {
         boolean isDeleted = uniteService.deleteUnite(id);
         if (isDeleted) {
@@ -48,5 +50,6 @@ public class UniteController {
         } else {
             return ResponseEntity.notFound().build();
         }
+
     }
 }

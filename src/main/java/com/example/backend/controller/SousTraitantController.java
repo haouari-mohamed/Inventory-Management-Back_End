@@ -13,24 +13,30 @@ import java.util.List;
 public class SousTraitantController {
 
     @Autowired
+
     private SousTraitantService sousTraitantService;
+
 
     @GetMapping
     public List<SousTraitant> getAllSousTraitants() {
         return sousTraitantService.getAllSousTraitants();
+
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<SousTraitant> getSousTraitantById(@PathVariable Long id) {
+
         return sousTraitantService.getSousTraitantById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
+
     public ResponseEntity<SousTraitant> createSousTraitant(@RequestBody SousTraitant sousTraitant) {
         SousTraitant createdSousTraitant = sousTraitantService.createSousTraitant(sousTraitant);
         return ResponseEntity.ok(createdSousTraitant);
+
     }
 
     @PutMapping("/{id}")
@@ -42,6 +48,7 @@ public class SousTraitantController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteSousTraitant(@PathVariable Long id) {
+
         boolean isDeleted = sousTraitantService.deleteSousTraitant(id);
         if (isDeleted) {
             return ResponseEntity.noContent().build();
@@ -50,3 +57,4 @@ public class SousTraitantController {
         }
     }
 }
+

@@ -1,12 +1,10 @@
 package com.example.backend.controller;
 
 import com.example.backend.model.Pole;
-import com.example.backend.repository.DivisionRepository;
-import com.example.backend.repository.PoleRepository;
+
 import com.example.backend.service.PoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

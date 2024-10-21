@@ -1,10 +1,10 @@
 package com.example.backend.controller;
 
+
 import com.example.backend.model.Utilisateur;
 import com.example.backend.service.UtilisateurService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/api/utilisateurs")
@@ -23,6 +24,7 @@ public class UtilisateurController {
     @GetMapping
     public List<Utilisateur> getAllUtilisateurs() {
         return utilisateurService.getAllUtilisateurs();
+
     }
 
     @GetMapping("/{id}")
@@ -71,12 +73,14 @@ public class UtilisateurController {
 
     @GetMapping("/check-username")
     public ResponseEntity<Boolean> checkUsernameAvailability(@RequestParam String username) {
+
         boolean isAvailable = utilisateurService.checkUsernameAvailability(username);
         return ResponseEntity.ok(isAvailable);
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+
         Optional<Utilisateur> utilisateurOpt = utilisateurService.login(loginRequest.getIdentifier(), loginRequest.getPassword());
 
         if (utilisateurOpt.isPresent()) {
@@ -85,6 +89,7 @@ public class UtilisateurController {
         }
 
         return ResponseEntity.badRequest().body("Invalid credentials");
+
     }
 
     @GetMapping("/details")
@@ -103,6 +108,7 @@ public class UtilisateurController {
 
     @GetMapping("/chefs-de-projet")
     public ResponseEntity<List<Utilisateur>> getChefsDeProjet() {
+
         List<Utilisateur> chefsDeProjet = utilisateurService.getChefsDeProjet();
         return ResponseEntity.ok(chefsDeProjet);
     }
@@ -126,3 +132,4 @@ class LoginResponse {
         this.id_utilisateur = id_utilisateur;
     }
 }
+

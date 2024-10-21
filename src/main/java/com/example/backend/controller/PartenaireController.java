@@ -2,6 +2,9 @@ package com.example.backend.controller;
 
 import com.example.backend.model.Partenaire;
 import com.example.backend.repository.PartenaireRepository;
+
+import com.example.backend.service.PartenaireService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,43 +16,28 @@ import java.util.List;
 public class PartenaireController {
 
     @Autowired
-    private PartenaireRepository partenaireRepository;
+    private PartenaireService partenaireService;
 
     @GetMapping
     public List<Partenaire> getAllPartenaires() {
-        return partenaireRepository.findAll();
+        return partenaireService.getAllPartenaire();
     }
-
     @GetMapping("/{id}")
-    public ResponseEntity<Partenaire> getPartenaireById(@PathVariable Long id) {
-        return partenaireRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public Partenaire getPartenaireById(@PathVariable Long id) {
+        return partenaireService.getPartenaireById(id);
     }
-
     @PostMapping
     public Partenaire createPartenaire(@RequestBody Partenaire partenaire) {
-        return partenaireRepository.save(partenaire);
-    }
 
+        return partenaireService.createPartenaire(partenaire);
+    }
     @PutMapping("/{id}")
-    public ResponseEntity<Partenaire> updatePartenaire(@PathVariable Long id, @RequestBody Partenaire partenaireDetails) {
-        return partenaireRepository.findById(id)
-                .map(partenaire -> {
-                    partenaire.setNom_partenaire(partenaireDetails.getNom_partenaire());
-                    Partenaire updatedPartenaire = partenaireRepository.save(partenaire);
-                    return ResponseEntity.ok(updatedPartenaire);
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public Partenaire updatePartenaire(@PathVariable Long id, @RequestBody Partenaire partenaireDetails) {
+        return partenaireService.updatePartenaire(id,partenaireDetails);
+    }
+    @DeleteMapping("/{id}")
+    public void deletePartenaire(@PathVariable Long id) {
+        partenaireService.deletePartenaire(id);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePartenaire(@PathVariable Long id) {
-        return partenaireRepository.findById(id)
-                .map(partenaire -> {
-                    partenaireRepository.delete(partenaire);
-                    return ResponseEntity.ok().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
 }
