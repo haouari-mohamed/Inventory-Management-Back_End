@@ -1,6 +1,7 @@
 package com.example.backend.controller;
 
 
+import com.example.backend.model.Role;
 import com.example.backend.model.Utilisateur;
 import com.example.backend.service.UtilisateurService;
 import lombok.Data;
@@ -8,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 @RestController
@@ -85,7 +83,11 @@ public class UtilisateurController {
 
         if (utilisateurOpt.isPresent()) {
             Utilisateur utilisateur = utilisateurOpt.get();
-            return ResponseEntity.ok(new LoginResponse("Login successful", null, utilisateur.getId_utilisateur()));
+
+            List<Role> list = new ArrayList<>(utilisateur.getRoles());
+
+
+            return ResponseEntity.ok(new LoginResponse("Login successful", list.isEmpty()?"":list.get(0).getRedirectionLink(), utilisateur.getId_utilisateur()));
         }
 
         return ResponseEntity.badRequest().body("Invalid credentials");
