@@ -1,29 +1,25 @@
 package com.example.backend.model;
 
+import com.example.backend.enums.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "Utilisateur")
-@Data
+@Setter
+@Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Utilisateur {
+public class Utilisateur implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_utilisateur;
-
-    @Column(nullable = false, length = 100)
-    private String prenom;
-
-    @Column(nullable = false, length = 100)
-    private String nom;
 
     @Column(nullable = false, unique = true, length = 255)
     private String email;
@@ -34,8 +30,8 @@ public class Utilisateur {
     @Column(nullable = false, unique = true, length = 100)
     private String username;
 
-    @Column(nullable = false, length = 255)
-    private String mot_de_passe;
+    @Column(nullable = true, length = 255)
+    private String password;
 
     @Column(nullable = false)
     @Temporal(TemporalType.DATE)
@@ -47,9 +43,6 @@ public class Utilisateur {
     @Column(nullable = false, length = 255)
     private String adresse;
 
-    @Column(nullable = false)
-    private boolean isDeleted;
-
     @ManyToOne
     @JoinColumn(name = "pole", nullable = true)
     private Pole pole;
@@ -58,17 +51,52 @@ public class Utilisateur {
     @JoinColumn(name = "division", nullable = true)
     private Division division;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "utilisateur_roles",
-        joinColumns = @JoinColumn(name = "utilisateur_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    @Column(nullable = false)
-    private Set<Role> roles = new HashSet<>();
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @ManyToOne
     @JoinColumn(name = "pays")
     private Pays pays;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (role == null) {
+
+            System.out.println("Role is not initialized.");
+            return List.of();
+        }
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+    @Override
+    public String getUsername() {
+        return this.username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+
 }
 

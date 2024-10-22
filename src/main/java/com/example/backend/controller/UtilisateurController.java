@@ -1,12 +1,16 @@
 package com.example.backend.controller;
 
 
-import com.example.backend.model.Role;
+import com.example.backend.DTO.LoginRequestDTO;
+import com.example.backend.config.JwtAuth;
+import com.example.backend.enums.Role;
 import com.example.backend.model.Utilisateur;
 import com.example.backend.service.UtilisateurService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -18,6 +22,8 @@ public class UtilisateurController {
 
     @Autowired
     private UtilisateurService utilisateurService;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @GetMapping
     public List<Utilisateur> getAllUtilisateurs() {
@@ -32,7 +38,7 @@ public class UtilisateurController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/registre")
     public ResponseEntity<?> createUtilisateur(@RequestBody Utilisateur utilisateur) {
         try {
             Utilisateur savedUtilisateur = utilisateurService.createUtilisateur(utilisateur);
@@ -63,75 +69,25 @@ public class UtilisateurController {
         }
     }
 
-    @GetMapping("/check-email")
-    public ResponseEntity<Boolean> checkEmailAvailability(@RequestParam String email) {
-        boolean isAvailable = utilisateurService.checkEmailAvailability(email);
-        return ResponseEntity.ok(isAvailable);
-    }
-
-    @GetMapping("/check-username")
-    public ResponseEntity<Boolean> checkUsernameAvailability(@RequestParam String username) {
-
-        boolean isAvailable = utilisateurService.checkUsernameAvailability(username);
-        return ResponseEntity.ok(isAvailable);
-    }
-
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-
-        Optional<Utilisateur> utilisateurOpt = utilisateurService.login(loginRequest.getIdentifier(), loginRequest.getPassword());
-
-        if (utilisateurOpt.isPresent()) {
-            Utilisateur utilisateur = utilisateurOpt.get();
-
-            List<Role> list = new ArrayList<>(utilisateur.getRoles());
-
-
-            return ResponseEntity.ok(new LoginResponse("Login successful", list.isEmpty()?"":list.get(0).getRedirectionLink(), utilisateur.getId_utilisateur()));
-        }
-
-        return ResponseEntity.badRequest().body("Invalid credentials");
-
-    }
-
-    @GetMapping("/details")
-    public ResponseEntity<?> getUserDetails(@RequestParam String identifier) {
-        Utilisateur user = utilisateurService.getUserDetails(identifier);
-        if (user != null) {
-            Map<String, String> userDetails = new HashMap<>();
-            userDetails.put("firstName", user.getPrenom());
-            userDetails.put("lastName", user.getNom());
-            userDetails.put("email", user.getEmail());
-            return ResponseEntity.ok(userDetails);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<?> Login(@RequestBody LoginRequestDTO loginRequestDTO) {
+        System.out.println("//////////:::"+loginRequestDTO.getUsername()+"///::"+loginRequestDTO.getPassword());
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequestDTO.getUsername(), loginRequestDTO.getPassword())
+        );
+        Utilisateur utilisateur = utilisateurService.findByUsername(loginRequestDTO.getUsername());
+        Role role= utilisateur.getRole();
+        String token = JwtAuth.generateToken(loginRequestDTO.getUsername(),role);
+        Map<String, String> response = new HashMap<>();
+        response.put("token", token);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/chefs-de-projet")
     public ResponseEntity<List<Utilisateur>> getChefsDeProjet() {
-
         List<Utilisateur> chefsDeProjet = utilisateurService.getChefsDeProjet();
         return ResponseEntity.ok(chefsDeProjet);
     }
 }
 
-@Data
-class LoginRequest {
-    private String identifier; // This can be either email or username
-    private String password;
-}
-
-@Data
-class LoginResponse {
-    private String message;
-    private String redirectionLink;
-    private Long id_utilisateur;
-
-    public LoginResponse(String message, String redirectionLink, Long id_utilisateur) {
-        this.message = message;
-        this.redirectionLink = redirectionLink;
-        this.id_utilisateur = id_utilisateur;
-    }
-}
 
