@@ -27,8 +27,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         System.out.println("////////////////////");
         String authorizationToken = request.getHeader("Authorization");
+        System.out.println("Authorization Header:ss " + request.getHeader("Authorization"));
+
         if (authorizationToken != null && authorizationToken.startsWith("Bearer ")) {
             try {
+                System.out.println("Authorization Header: oo" + request.getHeader("Authorization"));
+
                 String jwt = authorizationToken.substring(7);
                 Claims claims = Jwts.parser()
                         .setSigningKey(JwtAuth.SECRET_KEY)
@@ -36,6 +40,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                         .parseClaimsJws(jwt)
                         .getBody();
                 String username = claims.getSubject();
+                System.out.println("username token//////"+username);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         username,

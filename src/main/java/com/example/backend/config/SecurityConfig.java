@@ -33,6 +33,7 @@ public class SecurityConfig  {
                         .allowedOrigins("http://localhost:3000")
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowCredentials(true);
+
             }
         };
     }
@@ -46,7 +47,7 @@ public class SecurityConfig  {
                         expressionInterceptUrlRegistry
                                 .requestMatchers("/api/utilisateurs/registre").permitAll()
                                 .requestMatchers("/api/utilisateurs/login").permitAll()
-                                .anyRequest().authenticated()
+                                .anyRequest().permitAll()
 
                 )
                 .formLogin(formLogin ->formLogin.disable());
