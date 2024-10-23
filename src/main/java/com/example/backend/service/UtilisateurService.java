@@ -85,4 +85,7 @@ public class UtilisateurService {
     public Utilisateur findByUsername(String username){
         return utilisateurRepository.findByUsername(username);
     }
+    public Integer findIdByUsername(String username){
+        return utilisateurRepository.findIdByUsername(username);
+    }
 }

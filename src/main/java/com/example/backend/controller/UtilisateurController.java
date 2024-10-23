@@ -76,18 +76,27 @@ public class UtilisateurController {
                 new UsernamePasswordAuthenticationToken(loginRequestDTO.getUsername(), loginRequestDTO.getPassword())
         );
         Utilisateur utilisateur = utilisateurService.findByUsername(loginRequestDTO.getUsername());
-        Role role= utilisateur.getRole();
-        String token = JwtAuth.generateToken(loginRequestDTO.getUsername(),role);
-        Map<String, String> response = new HashMap<>();
+        Role role = utilisateur.getRole();
+        String token = JwtAuth.generateToken(loginRequestDTO.getUsername(), role);
+        Map<String, Object> response = new HashMap<>();
         response.put("token", token);
+        response.put("userId", utilisateur.getId_utilisateur());
+
         return ResponseEntity.ok(response);
     }
+
 
     @GetMapping("/chefs-de-projet")
     public ResponseEntity<List<Utilisateur>> getChefsDeProjet() {
         List<Utilisateur> chefsDeProjet = utilisateurService.getChefsDeProjet();
         return ResponseEntity.ok(chefsDeProjet);
     }
+
+    @GetMapping("/find/utilisateur/{username}")
+    public Integer findIdByUsername(@PathVariable String username){
+        return utilisateurService.findIdByUsername(username);
+    }
+
 }
 
 
