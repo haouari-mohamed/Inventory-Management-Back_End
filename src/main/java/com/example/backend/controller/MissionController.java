@@ -1,9 +1,9 @@
 package com.example.backend.controller;
 
 import com.example.backend.DTO.*;
+import com.example.backend.mapper.MissionMapper;
 import com.example.backend.model.*;
 import com.example.backend.repository.*;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,6 +27,8 @@ public class MissionController {
 
     @Autowired
     private DivisionRepository divisionRepository;
+    @Autowired
+    private MissionMapper missionMapper;
 
     @Autowired
     private MissionRepository missionRepository;
@@ -148,68 +152,89 @@ public class MissionController {
     }
 
     @GetMapping("/affaire/{affaireId}")
-    public ResponseEntity<List<MissionDTO>> getMissionsByAffaireId(@PathVariable Long affaireId) {
-        List<Mission> missions = missionRepository.findByAffaireIdAffaire(affaireId);
-        if (missions.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        
-        List<MissionDTO> missionDTOs = missions.stream()
-            .map(this::convertToDTO)
-            .collect(Collectors.toList());
-        
-        return ResponseEntity.ok(missionDTOs);
+    public List<Mission> getMissionsByAffaireId(@PathVariable Long affaireId) {
+        return missionRepository.findByAffaireIdAffaire(affaireId);
     }
 
-    private MissionDTO convertToDTO(Mission mission) {
-        MissionDTO missionDTO=new MissionDTO();
-
-        if (mission.getAffaire() != null) {
-            missionDTO.setAffaireId(mission.getAffaire().getIdAffaire());
-        }
-        if (mission.getPrincipalDivision() != null) {
-            missionDTO.setPrincipalDivisionId(mission.getPrincipalDivision().getId_division());
-        }
-        if (mission.getUnite() != null) {
-            missionDTO.setUniteId(mission.getUnite().getId_unite());
-        }
-        
-        // Map nested objects
-        missionDTO.setMissionDivisions(mission.getSecondaryDivisions().stream()
-            .map(div -> {
-                MissionDivisionDTO missionDivisionDTO = new MissionDivisionDTO();
-                missionDivisionDTO.setId(div.getId());
-                missionDivisionDTO.setMissionId(div.getMission().getId_mission());
-                missionDivisionDTO.setDivisionId(div.getDivision().getId_division());
-                missionDivisionDTO.setPartMission(div.getPartMission());
-                return missionDivisionDTO;
-            })
-            .collect(Collectors.toList()));
-        
-        missionDTO.setMissionSousTraitants(mission.getSousTraitants().stream()
-            .map(st -> {
-                MissionSTDTO missionSTDTO = new MissionSTDTO();
-                missionSTDTO.setId(st.getId());
-                missionSTDTO.setMissionId(st.getMission().getId_mission());
-                missionSTDTO.setSousTraitantId(st.getSousTraitant().getId_soustrait());
-                missionSTDTO.setPartMission(st.getPartMission());
-                return missionSTDTO;
-            })
-            .collect(Collectors.toList()));
-        
-        missionDTO.setMissionPartenaires(mission.getPartenaires().stream()
-            .map(p -> {
-                MissionPartenaireDTO missionPartenaireDTO = new MissionPartenaireDTO();
-                missionPartenaireDTO.setId(p.getId());
-                missionPartenaireDTO.setMissionId(p.getMission().getId_mission());
-                missionPartenaireDTO.setPartenaireId(p.getPartenaire().getId_partenaire());
-                missionPartenaireDTO.setPartMission(p.getPartMission());
-                return missionPartenaireDTO;
-            })
-            .collect(Collectors.toList()));
-
-        return missionDTO;
-    }
+//    @PostMapping("/{id}/repartition")
+//    @Transactional
+//    public ResponseEntity<?> repartitionTasks(@PathVariable Long id,@RequestBody RepartitionRequest repartitionRequest) {
+//        double partDivisionPrincipal = repartitionRequest.getPrincipalDivisionPart();
+//        double partDivisionsSecondaires = 0;
+//        double partPartenaires = 0;
+//        double partSousTraitants = 0;
+//
+//        for (MissionDivisionDTO division : repartitionRequest.getSecondaryDivisions()) {
+//            partDivisionsSecondaires += division.getPartMission();
+//        }
+//        for (MissionPartenaireDTO partenaire : repartitionRequest.getPartenaires()) {
+//            partPartenaires += partenaire.getPartMission();
+//        }
+//        for (MissionSTDTO sTraitants : repartitionRequest.getSousTraitants()) {
+//            partSousTraitants += sTraitants.getPartMission();
+//        }
+//        double sommeParts = partDivisionPrincipal + partDivisionsSecondaires + partPartenaires + partSousTraitants;
+//
+//        Mission mission = missionRepository.findById(id).orElseThrow();
+//
+//        if (mission.getPartMissionCID() > sommeParts) {
+//            //add part principal
+//            mission.setPartDivPrincipale(partDivisionPrincipal);
+//            //add division secondaire
+//            Set<MissionDivision> updatedSecondaryDivisions = new HashSet<>();
+//            for (MissionDivisionDTO divisionDTO : repartitionRequest.getSecondaryDivisions()) {
+//                Division division = divisionRepository.findById(divisionDTO.getDivisionId())
+//                        .orElseThrow(() -> new RuntimeException("Division not found: " + divisionDTO.getDivisionId()));
+//                MissionDivision missionDivision = mission.getSecondaryDivisions().stream()
+//                        .filter(sd -> sd.getDivision().getId_division().equals(division.getId_division()))
+//                        .findFirst()
+//                        .orElse(new MissionDivision());
+//                    missionDivision.setMission(mission);
+//                    missionDivision.setDivision(division);
+//                   missionDivision.setPartMission(divisionDTO.getPartMission());
+//                   updatedSecondaryDivisions.add(missionDivisionRepository.save(missionDivision));
+//            }
+//            //add sous traitance
+//             Set<MissionST> updatedSousTraitants = new HashSet<>();
+//            for (MissionSTDTO stDTO : repartitionRequest.getSousTraitants()) {
+//                SousTraitant sousTraitant = sousTraitantRepository.findById(stDTO.getSousTraitantId())
+//                        .orElseThrow(() -> new RuntimeException("Sous-traitant not found: " + stDTO.getSousTraitantId()));
+//                MissionST missionST = mission.getSousTraitants().stream()
+//                        .filter(st -> st.getSousTraitant().getId_soustrait().equals(sousTraitant.getId_soustrait()))
+//                        .findFirst()
+//                        .orElse(new MissionST());
+//                        missionST.setMission(mission);
+//                        missionST.setSousTraitant(sousTraitant);
+//                        missionST.setPartMission(stDTO.getPartMission());
+//                        updatedSousTraitants.add(missionSTRepository.save(missionST));
+//            }
+//            //add partenaire
+//                Set<MissionPartenaire> updatedPartenaires = new HashSet<>();
+//                for (MissionPartenaireDTO partenaireDTO : repartitionRequest.getPartenaires()) {
+//                    Partenaire partenaire = partenaireRepository.findById(partenaireDTO.getPartenaireId())
+//                            .orElseThrow(() -> new RuntimeException("Partenaire not found: " + partenaireDTO.getPartenaireId()));
+//
+//                    MissionPartenaire missionPartenaire = mission.getPartenaires().stream()
+//                            .filter(mp -> mp.getPartenaire().getId_partenaire().equals(partenaire.getId_partenaire()))
+//                            .findFirst()
+//                            .orElse(new MissionPartenaire());
+//
+//                    missionPartenaire.setMission(mission);
+//                    missionPartenaire.setPartenaire(partenaire);
+//                    missionPartenaire.setPartMission(partenaireDTO.getPartMission());
+//                    updatedPartenaires.add(missionPartenaireRepository.save(missionPartenaire));
+//
+//                }
+//                //add mission
+//               Mission updatedMission = missionRepository.save(mission);
+//               return ResponseEntity.ok().body(updatedMission);
+//
+//
+//
+//
+//        }
+//        return null;
+//    }
 
     @PostMapping("/{id}/repartition")
     @Transactional
@@ -237,7 +262,7 @@ public class MissionController {
 
             // Validate total part mission
             if (totalPartMission > existingMission.getPartMissionCID()) {
-                return ResponseEntity.badRequest().body("Total part mission (" + totalPartMission + 
+                return ResponseEntity.badRequest().body("Total part mission (" + totalPartMission +
                     ") exceeds partMissionCID (" + existingMission.getPartMissionCID() + ")");
             }
 
@@ -251,7 +276,7 @@ public class MissionController {
             for (MissionDivisionDTO divisionDTO : repartitionRequest.getSecondaryDivisions()) {
                 Division division = divisionRepository.findById(divisionDTO.getDivisionId())
                         .orElseThrow(() -> new RuntimeException("Division not found: " + divisionDTO.getDivisionId()));
-                
+
                 MissionDivision missionDivision = existingMission.getSecondaryDivisions().stream()
                         .filter(sd -> sd.getDivision().getId_division().equals(division.getId_division()))
                         .findFirst()
@@ -270,7 +295,7 @@ public class MissionController {
             for (MissionPartenaireDTO partenaireDTO : repartitionRequest.getPartenaires()) {
                 Partenaire partenaire = partenaireRepository.findById(partenaireDTO.getPartenaireId())
                         .orElseThrow(() -> new RuntimeException("Partenaire not found: " + partenaireDTO.getPartenaireId()));
-                
+
                 MissionPartenaire missionPartenaire = existingMission.getPartenaires().stream()
                         .filter(mp -> mp.getPartenaire().getId_partenaire().equals(partenaire.getId_partenaire()))
                         .findFirst()
@@ -289,7 +314,7 @@ public class MissionController {
             for (MissionSTDTO stDTO : repartitionRequest.getSousTraitants()) {
                 SousTraitant sousTraitant = sousTraitantRepository.findById(stDTO.getSousTraitantId())
                         .orElseThrow(() -> new RuntimeException("Sous-traitant not found: " + stDTO.getSousTraitantId()));
-                
+
                 MissionST missionST = existingMission.getSousTraitants().stream()
                         .filter(st -> st.getSousTraitant().getId_soustrait().equals(sousTraitant.getId_soustrait()))
                         .findFirst()
@@ -303,7 +328,6 @@ public class MissionController {
             }
             existingMission.getSousTraitants().retainAll(updatedSousTraitants);
 
-            // Save the updated mission
             Mission updatedMission = missionRepository.save(existingMission);
             logger.info("Repartition completed successfully");
             return ResponseEntity.ok().body(updatedMission);
@@ -341,38 +365,43 @@ public class MissionController {
         }
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<MissionDTO> getMissionDetails(@PathVariable Long id) {
-//        try {
-//            Mission mission = missionRepository.findById(id)
-//                    .orElseThrow(() -> new RuntimeException("Mission not found"));
-//
-//            MissionDTO missionDTO = new MissionDTO();
-//
-//            // Map secondary divisions
-//            List<MissionDivisionDTO> secondaryDivisions = mission.getSecondaryDivisions().stream()
-//                    .map(div -> missionDTO.map(div, MissionDivisionDTO.class))
-//                    .collect(Collectors.toList());
-//            missionDTO.setMissionDivisions(secondaryDivisions);
-//
-//            // Map sous-traitants
-//            List<MissionSTDTO> sousTraitants = mission.getSousTraitants().stream()
-//                    .map(st -> modelMapper.map(st, MissionSTDTO.class))
-//                    .collect(Collectors.toList());
-//            missionDTO.setMissionSousTraitants(sousTraitants);
-//
-//            // Map partenaires
-//            List<MissionPartenaireDTO> partenaires = mission.getPartenaires().stream()
-//                    .map(p -> modelMapper.map(p, MissionPartenaireDTO.class))
-//                    .collect(Collectors.toList());
-//            missionDTO.setMissionPartenaires(partenaires);
-//
-//            return ResponseEntity.ok(missionDTO);
-//        } catch (Exception e) {
-//            logger.error("Error fetching mission details", e);
-//            return ResponseEntity.badRequest().build();
-//        }
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<Mission> getMissionDetails(@PathVariable Long id) {
+            try {
+                Mission mission = missionRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Mission not found"));
+
+                return ResponseEntity.ok(mission);
+            } catch (Exception e) {
+                logger.error("Error fetching mission details", e);
+                return ResponseEntity.badRequest().build();
+            }
+    }
+    @GetMapping("/missions-divisions/{id}")
+    public ResponseEntity<List<AffaireMissionDTO>> getAffairesWithMissionsAndDivisions(@PathVariable Long id) {
+        List<Object[]> result = missionRepository.findAffairesWithMissionsAndDivisionsByChefDivision(id);
+        List<AffaireMissionDTO> dtoList = result.stream().map(record -> {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+            return new AffaireMissionDTO(
+                    (String) record[0],
+                    dateFormat.format((Date) record[1]),
+                    dateFormat.format((Date) record[2]),
+                    (Double) record[3],
+                    (String) record[4],
+                    (String) record[5],
+                    (Double) record[6],
+                    (String) record[7],
+                    (Double) record[8],
+                    (String) record[9],
+                    (Double) record[10],
+                    (String) record[11],
+                    (Double) record[12]
+            );
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtoList);
+    }
 
     public static class PartDivPrincipaleDTO {
         private Double partDivPrincipale;
@@ -386,52 +415,5 @@ public class MissionController {
         }
     }
 
-    public static class RepartitionRequest {
-        private Double principalDivisionPart;
-        private Set<MissionDivisionDTO> secondaryDivisions;
-        private Set<MissionPartenaireDTO> partenaires;
-        private Set<MissionSTDTO> sousTraitants;
 
-        public Double getPrincipalDivisionPart() {
-            return principalDivisionPart;
-        }
-
-        public void setPrincipalDivisionPart(Double principalDivisionPart) {
-            this.principalDivisionPart = principalDivisionPart;
-        }
-
-        public Set<MissionDivisionDTO> getSecondaryDivisions() {
-            return secondaryDivisions;
-        }
-
-        public void setSecondaryDivisions(Set<MissionDivisionDTO> secondaryDivisions) {
-            this.secondaryDivisions = secondaryDivisions;
-        }
-
-        public Set<MissionPartenaireDTO> getPartenaires() {
-            return partenaires;
-        }
-
-        public void setPartenaires(Set<MissionPartenaireDTO> partenaires) {
-            this.partenaires = partenaires;
-        }
-
-        public Set<MissionSTDTO> getSousTraitants() {
-            return sousTraitants;
-        }
-
-        public void setSousTraitants(Set<MissionSTDTO> sousTraitants) {
-            this.sousTraitants = sousTraitants;
-        }
-
-        @Override
-        public String toString() {
-            return "RepartitionRequest{" +
-                    "principalDivisionPart=" + principalDivisionPart +
-                    ", secondaryDivisions=" + secondaryDivisions +
-                    ", partenaires=" + partenaires +
-                    ", sousTraitants=" + sousTraitants +
-                    '}';
-        }
-    }
 }
