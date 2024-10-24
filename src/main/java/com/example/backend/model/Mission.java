@@ -1,5 +1,6 @@
 package com.example.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -67,13 +68,13 @@ public class Mission {
 
     @Column(name = "part_div_principale")
     private Double partDivPrincipale;
-
+@JsonIgnore
     @OneToMany(mappedBy = "mission", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MissionDivision> secondaryDivisions = new HashSet<>();
-
+@JsonIgnore
     @OneToMany(mappedBy = "mission", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MissionST> sousTraitants = new HashSet<>();
-
+@JsonIgnore
     @OneToMany(mappedBy = "mission", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MissionPartenaire> partenaires = new HashSet<>();
 
