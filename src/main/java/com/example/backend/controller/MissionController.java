@@ -403,6 +403,11 @@ public class MissionController {
         return ResponseEntity.ok(dtoList);
     }
 
+    @GetMapping("missionbydivision/{id}")
+    public List<MissionDivision> findMissionByDivission(@PathVariable Long id){
+        return missionDivisionRepository.findMissionDivisionByUtilisateurId(id);
+    }
+
     public static class PartDivPrincipaleDTO {
         private Double partDivPrincipale;
 

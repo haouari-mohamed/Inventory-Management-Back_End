@@ -22,9 +22,19 @@ public class AffaireController {
     @Autowired
     private UtilisateurRepository utilisateurRepository;
 
-    @GetMapping
-    public List<Affaire> getAllAffaires() {
-        return affaireService.getAllAffaire();
+//    @GetMapping
+//    public List<Affaire> getAllAffaires() {
+//        return affaireService.getAllAffaire();
+//    }
+
+    @GetMapping("/affaires/{id}")
+    public List<Affaire> getAllAffaires(@PathVariable Long id){
+        System.out.println("//////////"+id);
+        List<Affaire> affaires= affaireRepository.findAffairesByUtilisateur(id);
+        for (Affaire f:affaires){
+            System.out.println("...//"+f.getStatusAffaire());
+        }
+        return affaires;
     }
 
     @GetMapping("/{id}")

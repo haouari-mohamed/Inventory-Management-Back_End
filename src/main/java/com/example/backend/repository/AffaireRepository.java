@@ -6,6 +6,7 @@ import com.example.backend.model.Pole;
 import com.example.backend.model.StatusAffaire;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -41,4 +42,16 @@ public interface AffaireRepository extends JpaRepository<Affaire, Long> {
     List<Object[]> countByDivisionPrincipaleAndStatusAffaireGroupByMonth(Division division, int year);
     
     List<Affaire> findByDivisionPrincipale(Division divisionPrincipale);
+
+//    @Query("select a.* from Affaire a inner join MissionDivision md on md.mission.affaire.idAffaire=a.idAffaire inner join Utilisateur u on u.division.id_division=md.division.id_division where u.id_utilisateur=:id or Affaire a inner join Division d on d.id_division=a.divisionPrincipale inner join Utilisateur u on u.division.id_division=d.id_division where u.id_utilisateur=:id ")
+//
+
+    @Query("SELECT a FROM Affaire a " +
+            "LEFT JOIN MissionDivision md ON md.mission.affaire.idAffaire = a.idAffaire " +
+            "LEFT JOIN Utilisateur u1 ON u1.division.id_division = md.division.id_division " +
+            "LEFT JOIN Division d ON d.id_division = a.divisionPrincipale.id_division " +
+            "LEFT JOIN Utilisateur u2 ON u2.division.id_division = d.id_division " +
+            "WHERE u1.id_utilisateur = :id OR u2.id_utilisateur = :id")
+    List<Affaire> findAffairesByUtilisateur(@Param("id") Long id);
+
 }
