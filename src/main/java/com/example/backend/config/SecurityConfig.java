@@ -24,6 +24,7 @@ public class SecurityConfig  {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -46,8 +47,7 @@ public class SecurityConfig  {
                         expressionInterceptUrlRegistry
                                 .requestMatchers("/api/utilisateurs/registre").permitAll()
                                 .requestMatchers("/api/utilisateurs/login").permitAll()
-                                .anyRequest().authenticated()
-
+                                .anyRequest().permitAll()
                 )
                 .formLogin(formLogin ->formLogin.disable());
         http.addFilterBefore(new JwtAuthorizationFilter((userDetailsService)), UsernamePasswordAuthenticationFilter.class);

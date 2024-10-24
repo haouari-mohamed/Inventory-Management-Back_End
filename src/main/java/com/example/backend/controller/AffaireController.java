@@ -11,7 +11,7 @@ import java.time.Year;
 import java.util.*;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/affaires")
 public class AffaireController {
 

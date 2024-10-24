@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/poles")
+//@CrossOrigin(origins = "http://localhost:3000")
 public class PoleController {
 
 
