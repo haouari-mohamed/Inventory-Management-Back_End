@@ -1,6 +1,7 @@
 package com.example.backend.model;
 
 import com.example.backend.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -57,6 +58,9 @@ public class Utilisateur implements UserDetails {
     @ManyToOne
     @JoinColumn(name = "pays")
     private Pays pays;
+    @JsonIgnore
+    @OneToMany(mappedBy = "chefProjet", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<MissionChefProjet> missions = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

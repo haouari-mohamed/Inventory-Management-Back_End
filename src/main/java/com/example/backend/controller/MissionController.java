@@ -377,6 +377,7 @@ public class MissionController {
                 return ResponseEntity.badRequest().build();
             }
     }
+    //tableaux qui affiche partenaire sous traitants division secondaires avec leurs parts
     @GetMapping("/missions-divisions/{id}")
     public ResponseEntity<List<AffaireMissionDTO>> getAffairesWithMissionsAndDivisions(@PathVariable Long id) {
         List<Object[]> result = missionRepository.findAffairesWithMissionsAndDivisionsByChefDivision(id);
@@ -403,9 +404,13 @@ public class MissionController {
         return ResponseEntity.ok(dtoList);
     }
 
-    @GetMapping("missionbydivision/{id}")
-    public List<MissionDivision> findMissionByDivission(@PathVariable Long id){
-        return missionDivisionRepository.findMissionDivisionByUtilisateurId(id);
+    @GetMapping("missionbydivisionsc/{id}/{idf}")
+    public List<MissionDivision2DTO> findMissionByDivissionsc(@PathVariable Long id,@PathVariable Long idf){
+        return missionDivisionRepository.findMissionDivisionByUtilisateurId(id,idf);
+    }
+    @GetMapping("missionbydivisionpr/{id}/{idf}")
+    public List<Mission> findMissionByDivissionpr(@PathVariable Long id,@PathVariable Long idf){
+        return missionRepository.findMissionsByAffaireId(id,idf);
     }
 
     public static class PartDivPrincipaleDTO {
