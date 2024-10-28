@@ -39,7 +39,7 @@ public class Mission {
     @Column(name = "part_mission_CID", nullable = false)
     private Double partMissionCID;
 
-    @Column(name = "compte_client", nullable = false)
+    @Column(name = "compte_client", nullable = false ,columnDefinition = "Double default 0.0")
     private Double compteClient = 0.0;
 
     @Column(name = "date_debut", nullable = false)
@@ -57,7 +57,7 @@ public class Mission {
     @Column(name = "date_recommencement")
     @Temporal(TemporalType.DATE)
     private Date dateRecommencement;
-
+// todo add propety for status
     @ManyToOne
     @JoinColumn(name = "affaire_id", nullable = false)
     private Affaire affaire;

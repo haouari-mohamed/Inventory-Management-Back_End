@@ -45,13 +45,15 @@ public interface AffaireRepository extends JpaRepository<Affaire, Long> {
 
 //    @Query("select a.* from Affaire a inner join MissionDivision md on md.mission.affaire.idAffaire=a.idAffaire inner join Utilisateur u on u.division.id_division=md.division.id_division where u.id_utilisateur=:id or Affaire a inner join Division d on d.id_division=a.divisionPrincipale inner join Utilisateur u on u.division.id_division=d.id_division where u.id_utilisateur=:id ")
 //
+    @Query ("select a From Affaire a inner join Utilisateur u on u.division=a.divisionPrincipale where u.id_utilisateur= :id")
+    List<Affaire> findAffaireDivisionPrincipaleByIdUtilisateur(@Param("id") Long id);
 
     @Query("SELECT a FROM Affaire a " +
             "LEFT JOIN MissionDivision md ON md.mission.affaire.idAffaire = a.idAffaire " +
-            "LEFT JOIN Utilisateur u1 ON u1.division.id_division = md.division.id_division " +
-            "LEFT JOIN Division d ON d.id_division = a.divisionPrincipale.id_division " +
-            "LEFT JOIN Utilisateur u2 ON u2.division.id_division = d.id_division " +
-            "WHERE u1.id_utilisateur = :id OR u2.id_utilisateur = :id")
+            "LEFT JOIN Utilisateur u ON u.division.id_division = md.division.id_division " +
+            "WHERE u.id_utilisateur = :id")
     List<Affaire> findAffairesByUtilisateur(@Param("id") Long id);
+
+
 
 }

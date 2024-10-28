@@ -88,4 +88,7 @@ public class UtilisateurService {
     public Integer findIdByUsername(String username){
         return utilisateurRepository.findIdByUsername(username);
     }
+    public List<Utilisateur> finfChefProjetByDivision(Long id){
+        return utilisateurRepository.findChefsDeProjetByDivision(id,Role.CHEF_PROJET);
+    }
 }

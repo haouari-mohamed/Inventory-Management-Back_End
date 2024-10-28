@@ -27,10 +27,19 @@ public class AffaireController {
 //        return affaireService.getAllAffaire();
 //    }
 
-    @GetMapping("/affaires/{id}")
-    public List<Affaire> getAllAffaires(@PathVariable Long id){
+    @GetMapping("/affairesds/{id}")
+    public List<Affaire> getAllAffairesDivisionSecondaire(@PathVariable Long id){
         System.out.println("//////////"+id);
         List<Affaire> affaires= affaireRepository.findAffairesByUtilisateur(id);
+        for (Affaire f:affaires){
+            System.out.println("...//"+f.getStatusAffaire());
+        }
+        return affaires;
+    }
+    @GetMapping("/affairesdp/{id}")
+    public List<Affaire> getAllAffairesDivisionPrincipale(@PathVariable Long id){
+        System.out.println("//////////"+id);
+        List<Affaire> affaires= affaireRepository.findAffaireDivisionPrincipaleByIdUtilisateur(id);
         for (Affaire f:affaires){
             System.out.println("...//"+f.getStatusAffaire());
         }
