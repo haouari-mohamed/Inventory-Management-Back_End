@@ -18,25 +18,17 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/utilisateurs")
-//@CrossOrigin(origins = "http://localhost:3000")
 public class UtilisateurController {
 
     @Autowired
     private UtilisateurService utilisateurService;
     @Autowired
     private AuthenticationManager authenticationManager;
-    @Autowired
-    private SousTraitantController sousTraitantController;
 
     @GetMapping
     public List<Utilisateur> getAllUtilisateurs() {
         return utilisateurService.getAllUtilisateurs();
 
-    }
-
-    @GetMapping("/hello")
-    public String hello(){
-        return "hello";
     }
 
     @GetMapping("/{id}")
@@ -84,11 +76,11 @@ public class UtilisateurController {
                 new UsernamePasswordAuthenticationToken(loginRequestDTO.getUsername(), loginRequestDTO.getPassword())
         );
         Utilisateur utilisateur = utilisateurService.findByUsername(loginRequestDTO.getUsername());
-        System.out.println("////////////login hello"+utilisateur.getUsername());
         Role role= utilisateur.getRole();
         String token = JwtAuth.generateToken(loginRequestDTO.getUsername(),role);
-        Map<String, String> response = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
         response.put("token", token);
+        response.put("userId", utilisateur.getId_utilisateur());
         return ResponseEntity.ok(response);
     }
 

@@ -34,6 +34,7 @@ public class SecurityConfig  {
                         .allowedOrigins("http://localhost:3000")
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowCredentials(true);
+
             }
         };
     }
@@ -48,6 +49,7 @@ public class SecurityConfig  {
                                 .requestMatchers("/api/utilisateurs/registre").permitAll()
                                 .requestMatchers("/api/utilisateurs/login").permitAll()
                                 .anyRequest().permitAll()
+
                 )
                 .formLogin(formLogin ->formLogin.disable());
         http.addFilterBefore(new JwtAuthorizationFilter((userDetailsService)), UsernamePasswordAuthenticationFilter.class);

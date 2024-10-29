@@ -1,13 +1,12 @@
 package com.example.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import java.util.Date;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Objects;
+
+import java.util.*;
 
 @Entity
 @Table(name = "Mission")
@@ -56,6 +55,9 @@ public class Mission {
     @Column(name = "date_recommencement")
     @Temporal(TemporalType.DATE)
     private Date dateRecommencement;
+    @JsonIgnore
+    @OneToMany(mappedBy = "mission",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Avancement> avancements;
 
     @ManyToOne
     @JoinColumn(name = "affaire_id", nullable = false)
@@ -67,13 +69,13 @@ public class Mission {
 
     @Column(name = "part_div_principale")
     private Double partDivPrincipale;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "mission", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MissionDivision> secondaryDivisions = new HashSet<>();
-
+    @JsonIgnore
     @OneToMany(mappedBy = "mission", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MissionST> sousTraitants = new HashSet<>();
-
+    @JsonIgnore
     @OneToMany(mappedBy = "mission", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MissionPartenaire> partenaires = new HashSet<>();
 
