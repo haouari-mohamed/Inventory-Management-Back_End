@@ -37,6 +37,10 @@ public class UtilisateurService {
         utilisateur.setPassword(passwordEncoder.encode(utilisateur.getPassword()));
         return utilisateurRepository.save(utilisateur);
     }
+    public Utilisateur getChefProjetById(Long id) {
+        return utilisateurRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Chef de projet not found with id: " + id));
+    }
 
     public Utilisateur updateUtilisateur(Long id, Utilisateur utilisateur) {
         return utilisateurRepository.findById(id)

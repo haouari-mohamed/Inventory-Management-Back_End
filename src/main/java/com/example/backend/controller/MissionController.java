@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/missions")
-@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = "http://localhost:3000")
 public class MissionController {
 
     private static final Logger logger = LoggerFactory.getLogger(MissionController.class);

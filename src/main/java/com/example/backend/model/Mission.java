@@ -5,10 +5,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import java.util.Date;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Objects;
+
+import java.util.*;
 
 @Entity
 @Table(name = "Mission")
@@ -57,7 +55,14 @@ public class Mission {
     @Column(name = "date_recommencement")
     @Temporal(TemporalType.DATE)
     private Date dateRecommencement;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "mission",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Avancement> avancements;
+
+
 // todo add propety for status
+
     @ManyToOne
     @JoinColumn(name = "affaire_id", nullable = false)
     private Affaire affaire;
@@ -68,13 +73,13 @@ public class Mission {
 
     @Column(name = "part_div_principale")
     private Double partDivPrincipale;
-@JsonIgnore
+    @JsonIgnore
     @OneToMany(mappedBy = "mission", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MissionDivision> secondaryDivisions = new HashSet<>();
-@JsonIgnore
+    @JsonIgnore
     @OneToMany(mappedBy = "mission", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MissionST> sousTraitants = new HashSet<>();
-@JsonIgnore
+    @JsonIgnore
     @OneToMany(mappedBy = "mission", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MissionPartenaire> partenaires = new HashSet<>();
 
