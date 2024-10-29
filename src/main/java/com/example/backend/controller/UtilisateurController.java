@@ -89,6 +89,11 @@ public class UtilisateurController {
     public List<Utilisateur> getChefsDeProjetByDivision(@PathVariable Long id) {
         return utilisateurService.finfChefProjetByDivision(id);
     }
+
+    @GetMapping("/find/utilisateur/{username}")
+    public Integer findIdByUsername(@PathVariable String username){
+        return utilisateurService.findIdByUsername(username);
+    }
 }
 
 
