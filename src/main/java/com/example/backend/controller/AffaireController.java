@@ -315,4 +315,5 @@ public class AffaireController {
         return affaireService.getAffairesByChefProjet(id);
     }
 
+
 }
