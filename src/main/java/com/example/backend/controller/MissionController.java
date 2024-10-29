@@ -408,9 +408,17 @@ public class MissionController {
     public List<MissionDivision2DTO> findMissionByDivissionsc(@PathVariable Long id,@PathVariable Long idf){
         return missionDivisionRepository.findMissionDivisionByUtilisateurId(id,idf);
     }
-    @GetMapping("missionbydivisionpr/{id}/{idf}")
-    public List<Mission> findMissionByDivissionpr(@PathVariable Long id,@PathVariable Long idf){
-        return missionRepository.findMissionsByAffaireId(id,idf);
+    @GetMapping("missionbydivisionpr/{idf}")
+    public List<Mission> findMissionByDivissionpr(@PathVariable Long idf){
+        return missionRepository.findMissionsByAffaireId(idf);
+    }
+    @GetMapping("missionchefprojet/{id}/{ida}")
+    public List<MissionDivisionSecandaireDTO> findMissionChefProjet(@PathVariable Long id,@PathVariable Long ida){
+        return missionRepository.MissionByIdChefProjetAndIdAffaire(id,ida);
+    }
+    @GetMapping("missionpartsecondaire/{id}")
+    public List<MissionDetailDTO> DetailsMissionDivisionSecondaire(@PathVariable Long id){
+        return missionRepository.findDetailsMissionPartSecondaires(id);
     }
 
     public static class PartDivPrincipaleDTO {

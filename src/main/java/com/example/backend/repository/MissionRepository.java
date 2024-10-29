@@ -1,7 +1,9 @@
 package com.example.backend.repository;
 
 import com.example.backend.DTO.MissionDTO;
+import com.example.backend.DTO.MissionDetailDTO;
 import com.example.backend.DTO.MissionDivision2DTO;
+import com.example.backend.DTO.MissionDivisionSecandaireDTO;
 import com.example.backend.model.Mission;
 import com.example.backend.model.MissionDivision;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -54,14 +56,32 @@ public interface MissionRepository extends JpaRepository<Mission, Long> {
         "COALESCE(st.partMission, 0) + " +
         "COALESCE(p.partMission, 0)) <= a.partCID")
 List<Object[]> findAffairesWithMissionsAndDivisionsByChefDivision(@Param("idChefDivision") Long idChefDivision);
-    @Query("SELECT m FROM Mission m inner join Utilisateur u on u.division=m.principalDivision WHERE u.id_utilisateur = :id and m.affaire.idAffaire = :idf")
-    List<Mission> findMissionsByAffaireId(@Param("id") Long id,@Param("idf") Long idf);
+//    @Query("SELECT m FROM Mission m inner join Utilisateur u on u.division=m.principalDivision WHERE u.id_utilisateur = :id and m.affaire.idAffaire = :idf")
+//    List<Mission> findMissionsByAffaireId(@Param("id") Long id,@Param("idf") Long idf);
+   @Query("SELECT m FROM Mission m WHERE m.affaire.idAffaire = :idf")
+    List<Mission> findMissionsByAffaireId(@Param("idf") Long idf);
 //@Query("SELECT new com.example.backend.DTO.MissionDivision2DTO(m.id_mission, m.libelle_mission, md.partMission) " +
 //        "FROM Mission m " +
 //        "LEFT JOIN MissionDivision md ON m.id_mission = md.mission.id_mission " +
 //        "JOIN Utilisateur u ON u.division = md.division OR u.division = m.principalDivision " +
 //        "WHERE u.id_utilisateur = :id AND (m.affaire.idAffaire = :idf OR md.mission.affaire.idAffaire = :idf)")
 //List<MissionDivision2DTO> findMissionsByUtilisateurId(@Param("id") Long id, @Param("idf") Long idf);
+
+    @Query("select new com.example.backend.DTO.MissionDivisionSecandaireDTO(m.id_mission, m.libelle_mission, m.dateDebut, m.dateFin, md.partMission) " +
+            "from Mission m " +
+            "inner join MissionChefProjet mp on m.id_mission = mp.mission.id_mission " +
+            "inner join Utilisateur u on u.id_utilisateur = mp.chefProjet.id_utilisateur " +
+            "inner join MissionDivision md on md.mission.id_mission = mp.mission.id_mission " +
+            "where mp.chefProjet.id_utilisateur = :id and m.affaire.idAffaire = :ida")
+    List<MissionDivisionSecandaireDTO> MissionByIdChefProjetAndIdAffaire(@Param("id") Long id, @Param("ida") Long ida);
+
+    @Query("select new com.example.backend.DTO.MissionDetailDTO(m.id_mission,m.libelle_mission, u.username, u.division.nom_division, md.partMission) " +
+            "from Mission m " +
+            "inner join MissionChefProjet mp on m.id_mission = mp.mission.id_mission " +
+            "inner join Utilisateur u on mp.chefProjet.id_utilisateur = u.id_utilisateur " +
+            "inner join MissionDivision md on md.mission.id_mission = mp.mission.id_mission " +
+            "where mp.mission.id_mission = :id")
+    List<MissionDetailDTO> findDetailsMissionPartSecondaires(@Param("id") Long id);
 
 
 }

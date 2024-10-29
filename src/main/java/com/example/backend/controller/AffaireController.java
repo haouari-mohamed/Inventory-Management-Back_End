@@ -306,5 +306,13 @@ public class AffaireController {
 //                })
 //                .orElse(ResponseEntity.notFound().build());
 //    }
+    @GetMapping("affairechefprojet/{id}")
+    public List<Affaire> getAffairesByChefProjet(@PathVariable Long id){
+        return affaireService.getAffairesByChefProjetsc(id);
+    }
+    @GetMapping("affairechefprojetpr/{id}")
+    public List<Affaire> getAffairesByChefProjetpr(@PathVariable Long id){
+        return affaireService.getAffairesByChefProjet(id);
+    }
 
 }

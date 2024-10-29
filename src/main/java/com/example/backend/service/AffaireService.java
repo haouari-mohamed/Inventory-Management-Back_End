@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 import com.example.backend.model.Affaire;
+import com.example.backend.model.MissionChefProjet;
 import com.example.backend.model.StatusAffaire;
 import com.example.backend.repository.AffaireRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,4 +53,12 @@ public class AffaireService {
         affaire1.setDivisionPrincipale(affaire.getDivisionPrincipale());
         return affaireRepository.save(affaire1);
     }
+
+    public List<Affaire> getAffairesByChefProjetsc(Long id){
+        return affaireRepository.findAffairesByChefProjetsc(id);
+    }
+    public List<Affaire> getAffairesByChefProjet(Long id){
+        return affaireRepository.AffaireByChefProjet(id);
+    }
+
 }
