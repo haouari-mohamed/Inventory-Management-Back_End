@@ -6,6 +6,7 @@ import com.example.backend.model.Pole;
 import com.example.backend.model.StatusAffaire;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -41,4 +42,25 @@ public interface AffaireRepository extends JpaRepository<Affaire, Long> {
     List<Object[]> countByDivisionPrincipaleAndStatusAffaireGroupByMonth(Division division, int year);
     
     List<Affaire> findByDivisionPrincipale(Division divisionPrincipale);
+
+//    @Query("select a.* from Affaire a inner join MissionDivision md on md.mission.affaire.idAffaire=a.idAffaire inner join Utilisateur u on u.division.id_division=md.division.id_division where u.id_utilisateur=:id or Affaire a inner join Division d on d.id_division=a.divisionPrincipale inner join Utilisateur u on u.division.id_division=d.id_division where u.id_utilisateur=:id ")
+//
+    @Query ("select a From Affaire a inner join Utilisateur u on u.division=a.divisionPrincipale where u.id_utilisateur= :id")
+    List<Affaire> findAffaireDivisionPrincipaleByIdUtilisateur(@Param("id") Long id);
+
+    @Query("SELECT a FROM Affaire a " +
+            "LEFT JOIN MissionDivision md ON md.mission.affaire.idAffaire = a.idAffaire " +
+            "LEFT JOIN Utilisateur u ON u.division.id_division = md.division.id_division " +
+            "WHERE u.id_utilisateur = :id")
+    List<Affaire> findAffairesByUtilisateur(@Param("id") Long id);
+
+    @Query("select a from Affaire a inner join Mission m on m.affaire.idAffaire=a.idAffaire inner join MissionChefProjet mp on mp.mission.id_mission=m.id_mission where mp.chefProjet.id_utilisateur = :id")
+    List<Affaire> findAffairesByChefProjetsc(@Param("id") Long id);
+//    List<Affaire> findByChefProjetId_utilisateur(Long id);
+    @Query("select a from Affaire a inner join Utilisateur u on u.id_utilisateur=a.chefProjet.id_utilisateur where u.id_utilisateur = :id")
+    List<Affaire> AffaireByChefProjet(@Param("id") Long id);
+
+
+
+
 }

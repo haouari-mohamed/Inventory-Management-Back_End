@@ -84,10 +84,10 @@ public class UtilisateurController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/chefs-de-projet")
-    public ResponseEntity<List<Utilisateur>> getChefsDeProjet() {
-        List<Utilisateur> chefsDeProjet = utilisateurService.getChefsDeProjet();
-        return ResponseEntity.ok(chefsDeProjet);
+
+        @GetMapping("/chefs-de-projet/{id}")
+    public List<Utilisateur> getChefsDeProjetByDivision(@PathVariable Long id) {
+        return utilisateurService.finfChefProjetByDivision(id);
     }
 }
 

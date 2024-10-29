@@ -22,9 +22,28 @@ public class AffaireController {
     @Autowired
     private UtilisateurRepository utilisateurRepository;
 
-    @GetMapping
-    public List<Affaire> getAllAffaires() {
-        return affaireService.getAllAffaire();
+//    @GetMapping
+//    public List<Affaire> getAllAffaires() {
+//        return affaireService.getAllAffaire();
+//    }
+
+    @GetMapping("/affairesds/{id}")
+    public List<Affaire> getAllAffairesDivisionSecondaire(@PathVariable Long id){
+        System.out.println("//////////"+id);
+        List<Affaire> affaires= affaireRepository.findAffairesByUtilisateur(id);
+        for (Affaire f:affaires){
+            System.out.println("...//"+f.getStatusAffaire());
+        }
+        return affaires;
+    }
+    @GetMapping("/affairesdp/{id}")
+    public List<Affaire> getAllAffairesDivisionPrincipale(@PathVariable Long id){
+        System.out.println("//////////"+id);
+        List<Affaire> affaires= affaireRepository.findAffaireDivisionPrincipaleByIdUtilisateur(id);
+        for (Affaire f:affaires){
+            System.out.println("...//"+f.getStatusAffaire());
+        }
+        return affaires;
     }
 
     @GetMapping("/{id}")
@@ -287,5 +306,13 @@ public class AffaireController {
 //                })
 //                .orElse(ResponseEntity.notFound().build());
 //    }
+    @GetMapping("affairechefprojet/{id}")
+    public List<Affaire> getAffairesByChefProjet(@PathVariable Long id){
+        return affaireService.getAffairesByChefProjetsc(id);
+    }
+    @GetMapping("affairechefprojetpr/{id}")
+    public List<Affaire> getAffairesByChefProjetpr(@PathVariable Long id){
+        return affaireService.getAffairesByChefProjet(id);
+    }
 
 }
