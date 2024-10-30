@@ -16,7 +16,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/avancements")
-public class AvancementController {
+public class  AvancementController {
 
     @Autowired
     private AvancementService avancementService;

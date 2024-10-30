@@ -12,6 +12,7 @@ import java.util.List;
 public class EncaissementService {
     @Autowired
     private EncaissementRepository encaissementRepository;
+
     public List<Encaissement> getAllEncaissements(){
         return encaissementRepository.findAll();
     }
