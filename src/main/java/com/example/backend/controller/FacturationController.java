@@ -34,6 +34,10 @@ public class FacturationController {
     public Facturation updateFacturation(@PathVariable Long id, @RequestBody Facturation facturation) {
         return facturationService.updateFacturation(id,facturation);
     }
+    @GetMapping("bymission/{id}")
+    public List<Facturation> getFacturationByMission(@PathVariable Long id){
+        return facturationService.getFacturationByIdMission(id);
+    }
 
     @DeleteMapping("/{id}")
     public void deleteFacturation(@PathVariable Long id) {
