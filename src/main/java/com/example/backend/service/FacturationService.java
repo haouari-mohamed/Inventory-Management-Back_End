@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 import com.example.backend.model.Facturation;
+import com.example.backend.model.Mission;
 import com.example.backend.repository.FacturationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,9 @@ public class FacturationService {
         facturation1.setDateFacturation(facturation.getDateFacturation());
         facturation1.setMission(facturation.getMission());
         return facturationRepository.save(facturation1);
+    }
+    public List<Facturation> getFacturationByIdMission(Long id){
+        return facturationRepository.getFacturationMissionId(id);
     }
 
 }
