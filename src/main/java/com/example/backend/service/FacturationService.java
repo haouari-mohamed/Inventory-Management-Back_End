@@ -26,6 +26,7 @@ public class FacturationService {
     }
     public Facturation updateFacturation(Long id,Facturation facturation){
         Facturation facturation1=getFacturationById(id);
+        facturation1.setMontantFacture(facturation.getMontantFacture());
         facturation1.setDocumentFacture(facturation.getDocumentFacture());
         facturation1.setDateFacturation(facturation.getDateFacturation());
         facturation1.setMission(facturation.getMission());

@@ -5,5 +5,7 @@ public enum Role {
     DIRECTEUR_DIVISION,
     CHEF_POLE,
     CADRE_ADMINISTRATIF,
-    ADMIN
+    ADMIN,
+    DAF,
+    RECOUVREMENT
 }
