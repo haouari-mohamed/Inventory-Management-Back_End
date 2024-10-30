@@ -11,7 +11,7 @@ import java.time.Year;
 import java.util.*;
 
 @RestController
-//@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/affaires")
 public class AffaireController {
 
@@ -49,6 +49,11 @@ public class AffaireController {
     @GetMapping("/{id}")
     public Affaire getAffaireById(@PathVariable Long id) {
         return affaireService.getById(id);
+    }
+    @GetMapping("affairesdaf")
+    public List<Affaire> getAllAffaire(){
+        System.out.println("ssssssssssssssssssssssssssssssssssss");
+        return affaireService.getAllAffaire();
     }
 
     @PostMapping
