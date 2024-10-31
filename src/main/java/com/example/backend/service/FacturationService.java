@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 import com.example.backend.model.Facturation;
+import com.example.backend.model.Mission;
 import com.example.backend.repository.FacturationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +32,9 @@ public class FacturationService {
     public Facturation getFacturationById(Long id) {
         return facturationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Facturation not found"));
+    }
+    public List<Facturation> getFacturationByIdMission(Long id){
+        return facturationRepository.getFacturationMissionId(id);
     }
 
     public Facturation createFacturation(Double montantFacture, Date dateFacturation, Long id_mission, MultipartFile file) throws IOException {

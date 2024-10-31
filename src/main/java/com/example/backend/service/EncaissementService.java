@@ -33,5 +33,8 @@ public class EncaissementService {
         encaissement1.setDocumentFacture(encaissement.getDocumentFacture());
         return encaissementRepository.save(encaissement1);
     }
+    public List<Encaissement> getEncaissementByFacture(Long id){
+        return encaissementRepository.getEncaissementFactureId(id);
+    }
 
 }

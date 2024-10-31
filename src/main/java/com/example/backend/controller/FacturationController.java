@@ -63,6 +63,10 @@ public class FacturationController {
             return new ResponseEntity<>("File update failed: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @GetMapping("bymission/{id}")
+    public List<Facturation> getFacturationByMission(@PathVariable Long id){
+        return facturationService.getFacturationByIdMission(id);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFacturation(@PathVariable Long id) {

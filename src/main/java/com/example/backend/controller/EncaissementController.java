@@ -33,6 +33,11 @@ public class EncaissementController {
 
         return encaissementService.createEncaissement(encaissement);
     }
+    @GetMapping("byfacture/{id}")
+    public List<Encaissement> getByFacture(@PathVariable Long id){
+        System.out.println("id "+id);
+        return encaissementService.getEncaissementByFacture(id);
+    }
 
     @PutMapping("/{id}")
     public Encaissement updateEncaissement(@PathVariable Long id, @RequestBody Encaissement encaissement) {
