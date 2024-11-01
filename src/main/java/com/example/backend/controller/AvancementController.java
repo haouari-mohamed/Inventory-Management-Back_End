@@ -16,12 +16,14 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/avancements")
-public class AvancementController {
+public class  AvancementController {
 
     @Autowired
     private AvancementService avancementService;
     @Autowired
     private MissionRepository missionRepository;
+
+
 
     @GetMapping("/mission/{id_mission}")
     public ResponseEntity<List<Avancement>> getAvancementsByMission(@PathVariable Long id_mission) {
@@ -34,8 +36,6 @@ public class AvancementController {
         return avancementService.saveAvancement(avancement);
     }
 
-
-
 //    @PostMapping
 //    public ResponseEntity<Avancement> createAvancement(@RequestBody Avancement avancement) {
 //        if (avancement.getMission() == null || avancement.getMission().getId_mission() == null) {
@@ -46,7 +46,6 @@ public class AvancementController {
 //        Avancement savedAvancement = avancementService.saveAvancement(avancement);
 //        return ResponseEntity.status(HttpStatus.CREATED).body(savedAvancement);
 //    }
-
 
     @PutMapping("/{id_avancement}")
     public ResponseEntity<Avancement> updateAvancement(@PathVariable Long id_avancement, @RequestBody Avancement avancement) {

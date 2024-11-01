@@ -11,4 +11,8 @@ public interface FacturationRepository extends JpaRepository<Facturation, Long> 
 //    List<Facturation> findByMission_Id_mission(Long id);
     @Query("select f from Facturation f where f.mission.id_mission =:id")
     List<Facturation> getFacturationMissionId(@Param("id")Long id);
+
+    @Query("select f from Facturation f where f.documentFacture = :documentName")
+    Facturation findByDocumentFacture(@Param("documentName") String documentName);
+
 }
