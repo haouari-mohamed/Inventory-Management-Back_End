@@ -61,4 +61,11 @@ public class AffaireService {
         return affaireRepository.AffaireByChefProjet(id);
     }
 
+    public List<Affaire> getAffairesPrincipalePole(Long id){
+        return affaireRepository.findAffairePrincipalePole(id);
+    }
+    public List<Affaire> getAffairesSecondairePole(Long id){
+        return affaireRepository.findAffaireSecondairePole(id);
+    }
+
 }

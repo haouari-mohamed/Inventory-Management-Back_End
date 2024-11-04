@@ -319,6 +319,15 @@ public class AffaireController {
     public List<Affaire> getAffairesByChefProjetpr(@PathVariable Long id){
         return affaireService.getAffairesByChefProjet(id);
     }
+    @GetMapping("affairechefpoleprincipale/{id}")
+    public List<Affaire> getAffaireByChefPolePrincipale(@PathVariable Long id){
+        System.out.println("id   ==="+id);
+        return affaireService.getAffairesPrincipalePole(id);
+    }
+    @GetMapping("affairechefpolesecondaire/id")
+    public List<Affaire> getAffaireByChefPoleSecondaire(@PathVariable Long id){
+        return affaireService.getAffairesSecondairePole(id);
+    }
 
 
 }
