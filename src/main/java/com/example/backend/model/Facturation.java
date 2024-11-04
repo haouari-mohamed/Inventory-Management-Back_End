@@ -23,8 +23,9 @@ public class Facturation {
     @Column(name = "document_facture", nullable = false)
     private String documentFacture;
 
+
 //    @Lob
-//    private byte[] fileContent;
+//    private byte[] fileData;
 
     @Column(name = "date_facturation")
     @Temporal(TemporalType.DATE)

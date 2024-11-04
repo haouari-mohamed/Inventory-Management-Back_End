@@ -21,10 +21,17 @@ public class FacturationController {
     @Autowired
     private FacturationService facturationService;
 
-    @GetMapping("/download/{fileName:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
-        return facturationService.downloadFile(fileName);
+//    @GetMapping("/download/{fileName:.+}")
+//    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
+//        return  facturationService.downloadFile(fileName);
+//
+//    }
+
+    @GetMapping("/download/{id_facture}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long id_facture) {
+        return facturationService.downloadFile(id_facture);
     }
+
 
     @GetMapping
     public List<Facturation> getAllFacturations() {

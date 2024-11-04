@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FacturationRepository extends JpaRepository<Facturation, Long> {
 //    List<Facturation> findByMission_Id_mission(Long id);
@@ -14,5 +15,7 @@ public interface FacturationRepository extends JpaRepository<Facturation, Long> 
 
     @Query("select f from Facturation f where f.documentFacture = :documentName")
     Facturation findByDocumentFacture(@Param("documentName") String documentName);
+
+    Optional<Facturation> findById(Long id_facture);
 
 }
