@@ -60,6 +60,12 @@ public interface AffaireRepository extends JpaRepository<Affaire, Long> {
     @Query("select a from Affaire a inner join Utilisateur u on u.id_utilisateur=a.chefProjet.id_utilisateur where u.id_utilisateur = :id")
     List<Affaire> AffaireByChefProjet(@Param("id") Long id);
 
+    @Query("select a from Affaire a inner join Utilisateur u on a.polePrincipale.id_pole=u.pole.id_pole where u.id_utilisateur = :id")
+    List<Affaire> findAffairePrincipalePole(@Param("id")Long id);
+
+    @Query("select a from Affaire a inner join Mission m on a.idAffaire=m.affaire.idAffaire inner join MissionDivision md on m.id_mission=md.mission.id_mission inner join Division d on md.division.id_division=d.id_division inner join Utilisateur u on u.pole.id_pole=d.pole.id_pole where u.id_utilisateur = :id")
+    List<Affaire> findAffaireSecondairePole(@Param("id") Long id);
+
 
 
 
